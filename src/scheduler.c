@@ -6,6 +6,16 @@
 #define MAX_PROCESSES 10
 #define TIME_QUANTUM 4
 
+// ANSI color codes
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
+#define BOLD    "\033[1m"
+
 typedef enum {
     READY,
     RUNNING,
@@ -123,29 +133,30 @@ void clear_screen() {
 void draw_tui_view() {
     clear_screen();
 
-    printf("=== Simple TUI OS Scheduler ===\n");
-    printf("Time: %d\n", current_time);
+    printf(BOLD BLUE "=== Simple TUI OS Scheduler ===\n" RESET);
+    printf(CYAN "Time: %d\n" RESET, current_time);
 
-    printf("\nRunning Process:\n");
+    printf(BOLD YELLOW "\nRunning Process:\n" RESET);
     if (current_process != NULL) {
-        printf("Process %d | Remaining Time: %d\n", current_process->pid, current_process->remaining_time);
+        printf(BOLD GREEN "Process %d" RESET " | Remaining Time: " BOLD RED "%d\n" RESET,
+               current_process->pid, current_process->remaining_time);
     } else {
-        printf("No process running\n");
+        printf(BOLD RED "No process running\n" RESET);
     }
 
-    printf("\nReady Queue:\n");
+    printf(BOLD MAGENTA "\nReady Queue:\n" RESET);
     if (is_queue_empty()) {
-        printf("Empty\n");
+        printf(BOLD RED "Empty\n" RESET);
     } else {
         int index = ready_queue.front;
         for (int i = 0; i < ready_queue.size; i++) {
-            printf("P%d(%d) ", ready_queue.processes[index]->pid, ready_queue.processes[index]->remaining_time);
+            printf(CYAN "P%d(%d) " RESET, ready_queue.processes[index]->pid, ready_queue.processes[index]->remaining_time);
             index = (index + 1) % MAX_PROCESSES;
         }
         printf("\n");
     }
 
-    printf("\nPress CTRL+C to stop the simulation...\n");
+    printf("\n" BOLD YELLOW "Press CTRL+C to stop the simulation...\n" RESET);
 }
 
 int main() {
@@ -153,11 +164,11 @@ int main() {
 
     init_queue();
 
-    printf("Enter number of processes: ");
+    printf(BOLD "Enter number of processes: " RESET);
     scanf("%d", &num_processes);
 
     for (int i = 0; i < num_processes; i++) {
-        printf("Enter Process %d burst time: ", i + 1);
+        printf(BOLD "Enter Process %d burst time: " RESET, i + 1);
         scanf("%d", &burst_time);
         create_process(i + 1, burst_time);
     }
